@@ -3,11 +3,11 @@ from pydantic import BaseModel, Field
 
 class Movie(BaseModel):
     id: int | None = None
-    title: str = Field(min_length=2, max_length=15)
-    overview: str = Field(min_length=2, max_length=100)
-    year: int = Field(le=2024)
-    rating: float = Field(ge=1, le=10)
-    category: str = Field(min_length=2, max_length=15)
+    title: str | None = Field(default=None, min_length=2, max_length=15)
+    overview: str | None = Field(default=None, min_length=2, max_length=100)
+    year: int | None = Field(default=None, ge=1800, le=2024)
+    rating: float | None = Field(default=None, ge=1, le=10)
+    category: str | None = Field(default=None, min_length=2, max_length=15)
 
     model_config = {
         "json_schema_extra": {
@@ -16,7 +16,7 @@ class Movie(BaseModel):
                 "title": "My movie",
                 "overview": "Movie overview",
                 "year": 2024,
-                "rating": 0.0,
+                "rating": 1,
                 "category": "action",
             }
         }
