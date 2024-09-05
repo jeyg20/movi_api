@@ -1,8 +1,10 @@
 from typing import Annotated, Any, Dict, List
 
+from auth.jwt_manager import create_token
 from fastapi import APIRouter, HTTPException, Path, Query, status
 from fastapi.responses import HTMLResponse
 from models.movie import Movie
+from models.user import User
 
 router: APIRouter = APIRouter()
 
@@ -38,6 +40,13 @@ def find_movie_by_id(movie_id: int) -> Movie:
 @router.get("/", tags=["home"])
 async def message():
     return HTMLResponse("<h1>Hello user!</h1>")
+
+
+@router.post("/login", tags=["auth"], status_code=status.HTTP_200_OK)
+async def login(user: User):
+    if user.email == "admin@gmail.com" and user.password == "admin":
+        token: str = create_token(user.model_dump())
+        return token
 
 
 @router.get(
