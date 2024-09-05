@@ -1,8 +1,9 @@
 from typing import Annotated, Any, Dict, List
 
 from auth.jwt_manager import create_token
-from fastapi import APIRouter, HTTPException, Path, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from fastapi.responses import HTMLResponse
+from models.jwt_bearer import JWTBearer
 from models.movie import Movie
 from models.user import User
 
@@ -54,6 +55,7 @@ async def login(user: User):
     tags=["movies"],
     response_model=List[Movie],
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(JWTBearer())],
 )
 async def get_movies():
     return movies
@@ -64,6 +66,7 @@ async def get_movies():
     tags=["movies"],
     response_model=Movie,
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(JWTBearer())],
 )
 async def get_movie(movie_id: Annotated[int, Path(ge=0, le=999)]):
     return find_movie_by_id(movie_id)
@@ -74,6 +77,7 @@ async def get_movie(movie_id: Annotated[int, Path(ge=0, le=999)]):
     tags=["movies"],
     response_model=List[Movie],
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(JWTBearer())],
 )
 async def get_movies_by_category(
     category: Annotated[str | None, Query(min_length=5, max_length=15)] = None,
@@ -98,6 +102,7 @@ async def get_movies_by_category(
     tags=["movies"],
     response_model=Dict[str, Any],
     status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(JWTBearer())],
 )
 async def create_movie(movie: Movie):
     if any(existing_movie.id == movie.id for existing_movie in movies):
@@ -119,6 +124,7 @@ async def create_movie(movie: Movie):
     tags=["movies"],
     response_model=Dict[str, Any],
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(JWTBearer())],
 )
 async def update_movie(
     movie_id: Annotated[int, Path(ge=0, le=999)], movie_update: Movie
@@ -140,6 +146,7 @@ async def update_movie(
     tags=["movies"],
     response_model=Dict[str, Any],
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(JWTBearer())],
 )
 async def patch_movie(
     movie_id: Annotated[int, Path(ge=0, le=999)], movie_update: Movie
@@ -167,6 +174,7 @@ async def patch_movie(
     tags=["movies"],
     response_model=Dict[str, Any],
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(JWTBearer())],
 )
 async def delete_movie(movie_id: Annotated[int, Path(ge=0, le=999)]):
     if find_movie_by_id(movie_id) is None:
