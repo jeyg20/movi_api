@@ -1,3 +1,4 @@
 fastapi[standard]
 uvicorn==0.30.6
 PyJWT==2.9.0
+SQLAlchemy==2.0.34
