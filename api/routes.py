@@ -170,22 +170,6 @@ async def update_movie(
     return updated_movie
 
 
-@router.patch(
-    "/movies/{movie_id}",
-    tags=["movies"],
-    response_model=Dict[str, Any],
-    status_code=status.HTTP_200_OK,
-    dependencies=[Depends(JWTBearer())],
-)
-async def patch_movie(
-    movie_id: Annotated[int, Path(ge=0, le=999)],
-    updated_data: Movie,
-    db: Session = Depends(get_db),
-):
-    patched_movie = crud.patched_movie(db, movie_id, updated_data)
-    return patched_movie
-
-
 @router.delete(
     "/movies/{movie_id}",
     tags=["movies"],

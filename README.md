@@ -14,5 +14,4 @@ for managing movies.
 | POST   | `/movies`            | Create a new movie      |
 | POST   | `/movies/batch`      | Create multilple movies |
 | PUT    | `/movies/{movie_id}` | Update a movie by ID    |
-| PATCH  | `/movies/{movie_id}` | Patch a movie by ID     |
 | DELETE | `/movies/{movie_id}` | Delete a movie by ID    |

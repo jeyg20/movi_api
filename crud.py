@@ -11,7 +11,7 @@ def get_movies(db: Session) -> List[MovieModel]:
     return db.query(MovieModel).all()
 
 
-def get_movie_by_id(db: Session, movie_id: int) -> List[MovieModel]:
+def get_movie_by_id(db: Session, movie_id: int) -> MovieModel:
     return db.query(MovieModel).filter(MovieModel.id == movie_id).first()
 
 
@@ -36,31 +36,9 @@ def create_movie(db: Session, movie: Movie) -> Dict[str, Any]:
 
 
 def update_movie(db: Session, movie_id: int, updated_data: Movie) -> Dict[str, Any]:
-    if movie_id and get_movie_by_id(db, movie_id) is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found"
-        )
-
     movie = get_movie_by_id(db, movie_id)
 
-    updated_movie = updated_data.model_dump()
-
-    for key, value in updated_movie.items():
-        setattr(movie, key, value)
-
-    db.commit()
-    db.refresh(movie)
-
-    response_data: Dict[str, Any] = {
-        "message": "The movies has been updated correctly",
-        "data": movie,
-    }
-    return response_data
-
-
-def patched_movie(db: Session, movie_id: int, updated_data: Movie) -> Dict[str, Any]:
-    movie = get_movie_by_id(db, movie_id)
-    if movie_id and movie is None:
+    if movie is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found"
         )
@@ -74,8 +52,8 @@ def patched_movie(db: Session, movie_id: int, updated_data: Movie) -> Dict[str, 
     db.refresh(movie)
 
     response_data: Dict[str, Any] = {
-        "message": "The movies has been patched correctly",
-        "data": Movie.model_validate(movie),
+        "message": "The movie has been updated correctly",
+        "data": movie,
     }
     return response_data
 
