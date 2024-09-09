@@ -7,8 +7,7 @@ from sqlalchemy.orm.session import Session
 import crud
 from auth.jwt_manager import create_token
 from config.database import Base, SessionLocal, engine
-from models.db_movie import Movie as MovieModel
-from models.jwt_bearer import JWTBearer
+from middlewares.jwt_bearer import JWTBearer
 from models.movie import Movie
 from models.user import User
 

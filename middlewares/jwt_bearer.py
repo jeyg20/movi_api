@@ -1,7 +1,8 @@
-from auth.jwt_manager import validate_token
 from fastapi import HTTPException, Request, status
 from fastapi.security import HTTPBearer
 from jwt import DecodeError
+
+from auth.jwt_manager import validate_token
 
 
 class JWTBearer(HTTPBearer):
