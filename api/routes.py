@@ -116,11 +116,42 @@ async def get_movies_by_category(
     dependencies=[Depends(JWTBearer())],
 )
 async def create_movie(movie: Movie, db: Session = Depends(get_db)) -> Dict[str, Any]:
+
     if movie.id and crud.get_movie_by_id(db, movie.id):
         error_response = f"A movie with id {movie.id}, already exists"
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=error_response)
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=error_response,
+        )
 
     new_movie = crud.create_movie(db, movie)
+
+    return new_movie
+
+
+@router.post(
+    "/movies/batch",
+    tags=["movies"],
+    status_code=status.HTTP_201_CREATED,
+    response_model=dict,
+    dependencies=[Depends(JWTBearer())],
+)
+async def create_multiple_movies(
+    movies: List[Movie] | Movie, db: Session = Depends(get_db)
+) -> Dict[str, Any]:
+
+    if isinstance(movies, Movie):
+        movies = [movies]
+
+    for movie in movies:
+        if movie.id and crud.get_movie_by_id(db, movie.id):
+            error_response = f"A movie with id {movie.id}, already exists"
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=error_response,
+            )
+        new_movie = crud.create_movie(db, movie)
+
     return new_movie
 
 
