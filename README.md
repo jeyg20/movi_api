@@ -37,7 +37,7 @@ These credentials are automatically set in the example schema in the API docs.
 1. Clone the repository:
 
     ```bash
-    git clone git@github.com:jeyg20/movi_api.git
+    git clone git@github.com:jeyg20/movie_api.git
     cd movie-api
     ```
 
