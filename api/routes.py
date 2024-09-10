@@ -4,12 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm.session import Session
 
-import crud
 from auth.jwt_manager import create_token
 from config.database import Base, SessionLocal, engine
 from middlewares.jwt_bearer import JWTBearer
 from models.movie import Movie
 from models.user import User
+from services.crud import MovieServices
 
 router: APIRouter = APIRouter()
 
@@ -64,7 +64,7 @@ async def login(user: User) -> str:
     dependencies=[Depends(JWTBearer())],
 )
 async def get_movies(db: Session = Depends(get_db)):
-    result = crud.get_movies(db)
+    result = MovieServices(db).get_movies()
     return result
 
 
@@ -77,7 +77,7 @@ async def get_movies(db: Session = Depends(get_db)):
 async def get_movie_by_id(
     movie_id: Annotated[int, Path(ge=0, le=999)], db: Session = Depends(get_db)
 ):
-    db_movie = crud.get_movie_by_id(db, movie_id)
+    db_movie = MovieServices(db).get_movie_by_id(movie_id)
 
     if db_movie is None:
         error_response = f"The movie with id {movie_id}, does not exist"
@@ -98,7 +98,7 @@ async def get_movies_by_category(
     category: Annotated[str | None, Query(min_length=5, max_length=15)] = None,
     db: Session = Depends(get_db),
 ):
-    filtered_movies = crud.get_movie_by_category(db, category)
+    filtered_movies = MovieServices(db).get_movie_by_category(category)
     if not filtered_movies:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -116,14 +116,14 @@ async def get_movies_by_category(
 )
 async def create_movie(movie: Movie, db: Session = Depends(get_db)) -> Dict[str, Any]:
 
-    if movie.id and crud.get_movie_by_id(db, movie.id):
+    if movie.id and MovieServices(db).get_movie_by_id(movie.id):
         error_response = f"A movie with id {movie.id}, already exists"
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=error_response,
         )
 
-    new_movie = crud.create_movie(db, movie)
+    new_movie = MovieServices(db).create_movie(movie)
 
     return new_movie
 
@@ -143,13 +143,13 @@ async def create_multiple_movies(
         movies = [movies]
 
     for movie in movies:
-        if movie.id and crud.get_movie_by_id(db, movie.id):
+        if movie.id and MovieServices(db).get_movie_by_id(movie.id):
             error_response = f"A movie with id {movie.id}, already exists"
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=error_response,
             )
-        new_movie = crud.create_movie(db, movie)
+        new_movie = MovieServices(db).create_movie(movie)
 
     return new_movie
 
@@ -165,7 +165,7 @@ async def update_movie(
     updated_data: Movie,
     db: Session = Depends(get_db),
 ):
-    updated_movie = crud.update_movie(db, movie_id, updated_data)
+    updated_movie = MovieServices(db).update_movie(movie_id, updated_data)
     return updated_movie
 
 
@@ -180,5 +180,5 @@ async def delete_movie(
     movie_id: Annotated[int, Path(ge=0, le=999)],
     db: Session = Depends(get_db),
 ):
-    delted_movie = crud.delete_movie(db, movie_id)
+    delted_movie = MovieServices(db).delete_movie(movie_id)
     return delted_movie
